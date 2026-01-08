@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - MicroInvest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #00ffa3;
+            --bg-dark: #050a10;
+            --glass-bg: rgba(20, 30, 40, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, #0d1f33 0%, #050a10 100%);
+            min-height: 100vh;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .glass-card {
+            width: 100%;
+            max-width: 600px;
+            background: var(--glass-bg);
+            border-radius: 24px;
+            box-shadow: 0 0 0 1px var(--glass-border), 0 20px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-card">
+        <h2>Contact Us</h2>
+
+        <p><strong>Need Help?</strong> We’re here to support first-time investors and answer any questions you may have.
+        </p>
+
+        <p><strong>Email Support</strong> support@microinvest.in
+        </p>
+
+        <p><strong>Working Hours</strong> Monday – Saturday<br> 10:00 AM – 6:00 PM IST
+        </p>
+
+        <p><strong>Our Promise</strong> We aim to build trust, transparency, and financial confidence for everyone —
+            even if you’re investing for the very first time.
+        </p>
+
+        <a href="index.html" class="back-link">← Back to Login</a>
+    </div>
+</body>
+
+</html>
