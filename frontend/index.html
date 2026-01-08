@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MicroInvest | Secure Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #00ffa3;
+            --primary-dark: #00c27a;
+            --bg-dark: #050a10;
+            --glass-bg: rgba(20, 30, 40, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+            --error: #ff4757;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Outfit", sans-serif;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, #0d1f33 0%, #050a10 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+        }
+
+        /* --- Particles --- */
+
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* --- Card Styles --- */
+
+        .card-wrapper {
+            position: relative;
+            z-index: 10;
+            transform-style: preserve-3d;
+            animation: floatUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .glass-card {
+            width: 400px;
+            padding: 3rem 2.5rem;
+            background: var(--glass-bg);
+            border-radius: 24px;
+            box-shadow: 0 0 0 1px var(--glass-border), 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 163, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s ease-out;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 163, 0.5), transparent);
+        }
+
+        @keyframes floatUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Header Icon --- */
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1.5rem;
+            background: rgba(0, 255, 163, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 163, 0.2);
+            position: relative;
+        }
+
+        .icon-box::after {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
+            border-left-color: rgba(0, 255, 163, 0.3);
+            animation: spin 3s linear infinite;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        /* --- Inputs --- */
+
+        .input-container {
+            margin-bottom: 1.2rem;
+            text-align: left;
+            position: relative;
+        }
+
+        .label-text {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            margin-left: 5px;
+        }
+
+        .input-box {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .input-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 163, 0.2);
+        }
+
+        .input-icon {
+            color: var(--text-muted);
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .input-box:focus-within .input-icon {
+            color: var(--primary);
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 10px;
+            font-weight: 700;
+        }
+
+        /* --- Policy Checkbox Section --- */
+
+        .policy-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        .policy-container input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .policy-container label span {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.3s;
+        }
+
+        .policy-container label span:hover {
+            color: #fff;
+        }
+
+        /* Update this selector to target 'a' instead of 'span' */
+
+        .policy-container label a {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.3s;
+        }
+
+        .policy-container label a:hover {
+            color: #fff;
+        }
+
+        /* Animation for unchecked error */
+
+        .shake {
+            animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            color: var(--error);
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        /* --- Button --- */
+
+        .btn-glow {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 163, 0.3);
+        }
+
+        .btn-glow:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* --- Footer --- */
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--primary);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-card {
+                width: 90%;
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        .top-header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 1200px;
+            padding: 14px 24px;
+            background: rgba(20, 30, 40, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(18px);
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0, 255, 163, 0.08);
+        }
+
+        .logo {
+            font-weight: 700;
+            color: #00ffa3;
+            font-size: 1.2rem;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .user-info i {
+            font-size: 1.3rem;
+            color: #00ffa3;
+        }
+
+        .nav-links a {
+            color: #8b9bb4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ffa3;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            /* adjust spacing here */
+        }
+    </style>
+</head>
+
+<header class="top-header hidden" id="main-header">
+    <div class="logo">MicroInvest</div>
+
+    <div class="user-area">
+        <div class="user-info">
+            <i class="fa-solid fa-circle-user"></i>
+            <span id="user-email"></span>
+        </div>
+
+        <nav class="nav-links">
+            <a href="contact.html">Contact Us</a>
+            <a href="about.html">About</a>
+        </nav>
+    </div>
+</header>
+
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="card-wrapper" id="tilt-card">
+        <div class="glass-card">
+            <div class="icon-box"><i class="fa-solid fa-chart-simple"></i></div>
+            <h1>MicroInvest</h1>
+            <p class="subtitle" id="subtitle-text">Secure investment starts here</p>
+
+            <div id="step-1">
+                <div class="input-group">
+                    <div class="input-container">
+                        <label class="label-text">Email Address</label>
+                        <div class="input-box">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="email" placeholder="name@example.com" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="policy-container" id="policy-wrapper">
+                    <input type="checkbox" id="policy-check" />
+                    <label for="policy-check">
+                        I agree to the
+                        <a href="policy.html" class="policy-link">Terms & Conditions</a>
+                    </label>
+                </div>
+
+                <button class="btn-glow" id="send-otp-btn">
+                    Send OTP
+                    <i class="fa-solid fa-paper-plane" style="margin-left: 8px; font-size: 0.9em"></i>
+                </button>
+            </div>
+
+            <div id="step-2" class="hidden">
+                <div class="input-group">
+                    <div class="input-container">
+                        <label class="label-text">Enter 6-Digit Code</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input type="tel" id="otp-input" class="otp-input" placeholder="000000" maxlength="6" />
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-glow" id="verify-otp-btn">
+                    Verify Code
+                    <i class="fa-solid fa-shield-check" style="margin-left: 8px; font-size: 0.9em"></i>
+                </button>
+            </div>
+
+            <div class="footer">
+                <a onclick="alert('Forgot Password Flow Triggered')">Forgot Password?</a>
+                <a onclick="alert('Help center coming soon')">Help Center</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // EMAILJS KEYS
+        // ============================================================
+
+        const PUBLIC_KEY = "QhdmL0Rnvuru12KTv";
+        const SERVICE_ID = "service_c9l1tds";
+        const TEMPLATE_ID = "template_gwdu47c";
+
+        (function () {
+            emailjs.init(PUBLIC_KEY);
+        })();
+
+        // ============================================================
+        // ELEMENTS
+        // ============================================================
+
+        const sendBtn = document.getElementById("send-otp-btn");
+        const verifyBtn = document.getElementById("verify-otp-btn");
+        const emailInput = document.getElementById("email");
+        const otpInput = document.getElementById("otp-input");
+        const step1 = document.getElementById("step-1");
+        const step2 = document.getElementById("step-2");
+        const subtitle = document.getElementById("subtitle-text");
+
+        const policyCheck = document.getElementById("policy-check");
+        const policyWrapper = document.getElementById("policy-wrapper");
+
+        // HEADER ELEMENTS
+        const header = document.getElementById("main-header");
+        const headerEmail = document.getElementById("user-email");
+        const loginCard = document.querySelector(".card-wrapper");
+
+        let generatedOTP = null;
+
+        // ============================================================
+        // STEP 1: SEND OTP
+        // ============================================================
+
+        sendBtn.addEventListener("click", function () {
+            if (!policyCheck.checked) {
+                policyWrapper.classList.add("shake");
+                setTimeout(() => policyWrapper.classList.remove("shake"), 500);
+                return;
+            }
+
+            const email = emailInput.value;
+            if (!email || !email.includes("@")) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            let originalText = this.innerHTML;
+            this.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+            this.disabled = true;
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000);
+            console.log("OTP (testing):", generatedOTP);
+
+            emailjs
+                .send(SERVICE_ID, TEMPLATE_ID, {
+                    to_email: email,
+                    otp: generatedOTP,
+                })
+                .then(() => {
+                    sendBtn.innerHTML = originalText;
+                    sendBtn.disabled = false;
+
+                    step1.classList.add("hidden");
+                    step2.classList.remove("hidden");
+
+                    subtitle.innerText = "OTP sent to " + email;
+                    subtitle.style.color = "#00ffa3";
+
+                    confetti({
+                        particleCount: 50,
+                        origin: {
+                            y: 0.6,
+                        },
+                    });
+                })
+                .catch(() => {
+                    sendBtn.innerHTML = "Failed";
+                    sendBtn.style.background = "#ff4757";
+                    setTimeout(() => {
+                        sendBtn.innerHTML = originalText;
+                        sendBtn.style.background = "";
+                        sendBtn.disabled = false;
+                    }, 3000);
+                });
+        });
+
+        // ============================================================
+        // STEP 2: VERIFY OTP (LOGIN SUCCESS + REDIRECT)
+        // ============================================================
+
+        verifyBtn.addEventListener("click", function () {
+            if (otpInput.value == generatedOTP) {
+                // SAVE LOGIN STATE
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", emailInput.value);
+
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: {
+                        y: 0.6,
+                    },
+                });
+
+                this.innerHTML = "Login Successful!";
+                this.style.background = "#00ffa3";
+                this.style.color = "#000";
+
+                // ✅ REDIRECT TO DASHBOARD
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1200);
+            } else {
+                this.innerHTML = "Wrong OTP";
+                this.style.background = "#ff4757";
+                this.classList.add("shake");
+
+                setTimeout(() => {
+                    this.innerHTML = "Verify Code";
+                    this.style.background = "";
+                    this.classList.remove("shake");
+                }, 2000);
+            }
+        });
+
+        // ============================================================
+        // VISUAL EFFECTS (UNCHANGED)
+        // ============================================================
+
+        const canvas = document.getElementById("particle-canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+
+        let particles = [];
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 150,
+        };
+
+        window.addEventListener("mousemove", (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() - 0.5;
+                this.speedY = Math.random() - 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = "rgba(0,255,163,0.7)";
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < (canvas.width * canvas.height) / 9000; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p) => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+
+</html>
