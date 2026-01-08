@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - MicroInvest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: #00ffa3;
+            --primary-dark: #00c27a;
+            --bg-dark: #050a10;
+            --glass-bg: rgba(20, 30, 40, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+            --error: #ff4757;
+            --success: #00ffa3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Outfit", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, #0d1f33 0%, #050a10 100%);
+            min-height: 100vh;
+            padding: 32px;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- Particles --- */
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* HEADER */
+
+        .main-header {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-header h1 {
+            color: var(--text-main);
+            font-size: 2.2rem;
+            text-shadow: 0 0 20px rgba(0, 255, 163, 0.3);
+        }
+
+        .main-header p {
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .rural-line {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* LAYOUT */
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 32px;
+            max-width: 1150px;
+            margin: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CARD STYLE (Glassmorphism) */
+
+        .card {
+            background: var(--glass-bg);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* SECTIONS & LISTS */
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            background: rgba(0, 255, 163, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #d1d5db;
+        }
+
+        ul {
+            padding-left: 18px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* INPUTS & BUTTONS */
+
+        label {
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .amount-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 163, 0.2);
+        }
+
+        button {
+            padding: 14px 22px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 255, 163, 0.2);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 163, 0.4);
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .quick-buttons button {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+        }
+
+        .quick-buttons button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* STATUS MESSAGES */
+
+        .trust {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid #22c55e;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #86efac;
+            margin-bottom: 14px;
+        }
+
+        .warn {
+            background: rgba(249, 115, 22, 0.1);
+            border-left: 4px solid #f97316;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #fdba74;
+            margin-bottom: 22px;
+        }
+
+        /* TABLE */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+            color: #fff;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 14px;
+            opacity: 0.7;
+        }
+
+        .top-header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 1200px;
+            padding: 14px 24px;
+            background: rgba(20, 30, 40, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(18px);
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0, 255, 163, 0.08);
+        }
+
+        .logo {
+            font-weight: 700;
+            color: #00ffa3;
+            font-size: 1.2rem;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .user-info i {
+            font-size: 1.3rem;
+            color: #00ffa3;
+        }
+
+        .nav-links a {
+            color: #8b9bb4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ffa3;
+        }
+
+        body {
+            padding-top: 120px;
+        }
+
+        .nav-links a:hover {
+            color: #00ffa3;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            /* adjust spacing here */
+        }
+    </style>
+</head>
+
+<header class="top-header" id="main-header">
+    <div class="logo">MicroInvest</div>
+
+    <div class="user-area">
+        <div class="user-info">
+            <i class="fa-solid fa-circle-user"></i>
+            <span id="user-email">user@email.com</span>
+        </div>
+
+        <nav class="nav-links">
+            <a href="contact.html">Contact Us</a>
+            <a href="about.html">About</a>
+        </nav>
+    </div>
+</header>
+
+
+<body>
+    <div class="main-header">
+        <h1>₹10Invest</h1>
+        <p>Safe micro-investing for everyone</p>
+        <div class="rural-line">
+            Built for rural, semi-urban & first-time investors
+        </div>
+    </div>
+
+    <div class="layout">
+        <div class="card">
+            <h3 style="margin-bottom: 12px; color: #22c55e">
+                Invest ₹10 safely today
+            </h3>
+
+            <div class="section highlight">
+                Many people avoid investing due to Fear,<br /> Lack of Financial Literacy and Distrust in Apps,
+                <br />believing it is only for the Wealthy.
+            </div>
+
+            <div class="section1">
+                1 Tea = ₹10 Investment <br /> Missed a bus today? Invest ₹15 <br /> Mobile Data Limit reached? Invest
+                ₹19 <br />
+            </div>
+
+            <div class="section">
+                <div class="section-title"><br />What We Solve</div>
+                ₹10Invest allows anyone to start investing with just <br />₹10 in Simple and Low-Risk options.
+                <br /><br /> From Every ₹10,<br /><b>
+                    ₹6 → Government Bonds<br />
+                    ₹3 → Large Stable Funds<br />
+                    ₹1 → Safety Buffer</b>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Key Barriers</div>
+                <ul>
+                    <li>Fear of financial loss</li>
+                    <li>Low financial literacy</li>
+                    <li>Confusing financial jargon</li>
+                    <li>Poor internet & low-end phones</li>
+                    <li>Belief that investing needs big capital</li>
+                </ul>
+            </div>
+
+            <div class="section highlight">
+                Small, safe investments today can turn Idle Savings into a path toward Long-Term Financial Confidence.
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h3 style="color: #22c55e; margin-bottom: 12px">Start Investing</h3>
+
+                <label>Enter amount (Minimum ₹10)</label>
+                <div class="amount-input">
+                    <input type="number" id="amount" placeholder="₹ Enter amount" />
+                    <button class="primary-btn" onclick="investCustom()">Invest</button>
+                </div>
+
+                <div class="quick-buttons">
+                    <button onclick="setAmount(10)">₹10</button>
+                    <button onclick="setAmount(50)">₹50</button>
+                    <button onclick="setAmount(100)">₹100</button>
+                </div>
+
+                <p id="status" style="margin-top: 10px; font-size: 0.9rem"></p>
+            </div>
+
+            <div class="trust">
+                <b>Why this is safe:</b> Only low-risk concepts, simple explanations, no pressure, no complex charts.
+            </div>
+            <!-- 
+            <div class="warn">
+                <b>Demo Disclaimer:</b> Hackathon demo only. No real money involved.
+            </div> -->
+
+            <div class="card">
+                <h3>Investment History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Amount (₹)</th>
+                            <th>Date</th>
+                            <th>Risk</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <tr>
+                            <td colspan="3">No investments yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="footer">
+                Designed for low-bandwidth & first-time investors 🇮🇳
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setAmount(v) {
+            const input = document.getElementById("amount");
+            const current = parseInt(input.value) || 0;
+            input.value = current + v;
+        }
+
+        function investCustom() {
+            const amountInput = document.getElementById("amount");
+            const amt = parseInt(amountInput.value);
+            const status = document.getElementById("status");
+            const tableBody = document.getElementById("historyTable");
+
+            if (!amt || amt < 10) {
+                status.style.color = "#b91c1c";
+                status.innerText = "Minimum investment is ₹10";
+                return;
+            }
+
+            // Clear "No investments yet" row if present
+            if (
+                tableBody.children.length === 1 &&
+                tableBody.children[0].children[0].innerText.includes("No investments")
+            ) {
+                tableBody.innerHTML = "";
+            }
+
+            // Create new row
+            const row = document.createElement("tr");
+
+            const amountCell = document.createElement("td");
+            amountCell.innerText = `₹${amt}`;
+
+            const dateCell = document.createElement("td");
+            dateCell.innerText = new Date().toLocaleDateString("en-IN");
+
+            const riskCell = document.createElement("td");
+            riskCell.innerText = "Low";
+
+            row.appendChild(amountCell);
+            row.appendChild(dateCell);
+            row.appendChild(riskCell);
+
+            tableBody.appendChild(row);
+
+            // Success message
+            status.style.color = "#15803d";
+            status.innerText = `₹${amt} invested successfully (demo)`;
+
+            // Reset input
+            amountInput.value = "";
+        }
+    </script>
+    <script>
+        const email = localStorage.getItem("userEmail");
+
+        if (!email) {
+            // Not logged in → go back to login
+            window.location.href = "index.html";
+        } else {
+            document.getElementById("user-email").innerText = email;
+        }
+    </script>
+
+
+    <script src="app.js"></script>
+</body>
+
+</html>
